@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CyberGate - Cybersecurity Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: rgba(15, 23, 42, 0.8);
+      --accent: #22d3ee;
+      --accent-soft: rgba(34, 211, 238, 0.25);
+      --accent-strong: #38bdf8;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --success: #4ade80;
+      --glass: rgba(15, 23, 42, 0.75);
+      --border-glass: rgba(148, 163, 184, 0.25);
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.7);
+      --nav-height: 64px;
+      --radius-lg: 18px;
+      --radius-sm: 10px;
+      --transition-fast: 0.2s ease;
+    }
+    [data-theme="light"] {
+      --bg: #f3f4f6;
+      --bg-alt: rgba(255, 255, 255, 0.9);
+      --glass: rgba(255, 255, 255, 0.85);
+      --border-glass: rgba(148, 163, 184, 0.35);
+      --text: #020617;
+      --text-muted: #4b5563;
+      --shadow-soft: 0 14px 30px rgba(15, 23, 42, 0.25);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #0f172a 0, transparent 55%),
+        radial-gradient(circle at bottom right, #22d3ee33 0, transparent 55%),
+        linear-gradient(135deg, #020617, #020617);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+    .noise-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: 0.14;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.7' numOctaves='2' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+      z-index: -1;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* Navbar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(to bottom, rgba(15,23,42,0.92), rgba(15,23,42,0.65));
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    [data-theme="light"] header {
+      background: linear-gradient(to bottom, rgba(255,255,255,0.94), rgba(255,255,255,0.9));
+    }
+    .nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: conic-gradient(from 210deg, #22d3ee, #6366f1, #22c55e, #22d3ee);
+      padding: 2px;
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.7);
+    }
+    .brand-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: radial-gradient(circle at 20% 20%, #0f172a, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      color: #e5e7eb;
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+    .brand-text span:first-child {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .brand-text span:last-child {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.18em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .nav-link {
+      font-size: 0.9rem;
+      padding: 0.3rem 0;
+      position: relative;
+      color: var(--text-muted);
+      transition: color var(--transition-fast), transform var(--transition-fast);
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -4px;
+      height: 2px;
+      border-radius: 12px;
+      transform: scaleX(0);
+      transform-origin: center;
+      background: linear-gradient(90deg, #22d3ee, #6366f1);
+      transition: transform 0.28s ease;
+    }
+    .nav-link.active {
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+    .nav-link:hover {
+      color: var(--accent-strong);
+    }
+    .nav-link.active::after {
+      transform: scaleX(1);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .theme-toggle {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: radial-gradient(circle at 10% 0, rgba(34, 211, 238, 0.14), transparent 55%);
+      padding: 0.25rem 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .theme-toggle span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      box-shadow: 0 0 0 1px rgba(148,163,184,0.35);
+    }
+    [data-theme="light"] .theme-toggle span {
+      background: #fff;
+      color: #0f172a;
+    }
+    .nav-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 0.45rem 0.95rem;
+      font-size: 0.82rem;
+      background: radial-gradient(circle at 0 0, #22d3ee55, transparent 55%),
+                  linear-gradient(135deg, #22d3ee, #6366f1);
+      color: #0b1120;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.7);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+    }
+    .nav-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.9);
+    }
+    .nav-btn span.icon {
+      font-size: 1rem;
+    }
+    .hamburger {
+      display: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hamburger span {
+      width: 16px;
+      height: 2px;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        display: none;
+      }
+      .nav-actions {
+        display: none;
+      }
+      .hamburger {
+        display: inline-flex;
+      }
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: var(--nav-height) 0 auto 0;
+        padding: 0.75rem 1rem 1rem;
+        background: radial-gradient(circle at top, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+        z-index: 35;
+      }
+      [data-theme="light"] .mobile-menu {
+        background: radial-gradient(circle at top, rgba(255,255,255,0.96), rgba(255,255,255,0.98));
+      }
+      .mobile-menu.open {
+        display: block;
+      }
+      .mobile-menu-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .mobile-menu-links button {
+        background: transparent;
+        border: none;
+        text-align: left;
+        padding: 0.5rem 0.2rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      .mobile-menu-links button.active {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .mobile-menu-footer {
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    /* Layout */
+    main {
+      flex: 1;
+    }
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.3fr);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .cards-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.88));
+      border: 1px solid var(--border-glass);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(22px);
+      padding: 1.2rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    [data-theme="light"] .card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(249,250,251,0.96));
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -35%;
+      background:
+        radial-gradient(circle at 0 0, rgba(34,211,238,0.08), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(94,234,212,0.1), transparent 65%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.1rem;
+      gap: 0.5rem;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .card-pill {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text-muted);
+    }
+    [data-theme="light"] .card-pill {
+      background: rgba(255,255,255,0.9);
+    }
+    .card-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+    .card-body {
+      font-size: 0.87rem;
+      color: var(--text-muted);
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.65rem 0;
+    }
+    .pill {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-muted);
+    }
+    [data-theme="light"] .pill {
+      background: rgba(255,255,255,0.9);
+    }
+
+    /* Hero section */
+    #home .hero-heading {
+      font-size: clamp(1.7rem, 3vw, 2.1rem);
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, #22d3ee, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.55);
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+    }
+    [data-theme="light"] .hero-meta span {
+      background: rgba(255,255,255,0.95);
+    }
+
+    .hero-cta {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .btn-secondary {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    }
+    [data-theme="light"] .btn-secondary {
+      background: rgba(255,255,255,0.95);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent-strong);
+      color: var(--accent-strong);
+      transform: translateY(-1px);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 210px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #22d3ee, #0ea5e9 30%, #1d4ed8 60%, #020617 100%);
+      box-shadow:
+        0 0 40px rgba(34, 211, 238, 0.8),
+        0 0 80px rgba(56, 189, 248, 0.7);
+      opacity: 0.95;
+    }
+    .orb-grid {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background-image: linear-gradient(rgba(15,23,42,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.7) 1px, transparent 1px);
+      background-size: 20px 20px;
+      transform: rotate(16deg);
+      opacity: 0.5;
+    }
+    .orb-outline {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: inherit;
+      border: 1px dashed rgba(148, 163, 184, 0.4);
+    }
+    .hero-badge {
+      position: absolute;
+      bottom: 1.1rem;
+      right: 1rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      backdrop-filter: blur(12px);
+    }
+    [data-theme="light"] .hero-badge {
+      background: rgba(255,255,255,0.96);
+    }
+
+    /* Generic section content */
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    .section-heading {
+      font-size: 1.15rem;
+      margin-bottom: 0.3rem;
+    }
+    .section-intro {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+    .split-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 900px) {
+      .split-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .list {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 0.4rem;
+    }
+    .list li {
+      list-style: none;
+      display: flex;
+      gap: 0.45rem;
+    }
+    .list li span.bullet {
+      font-size: 0.8rem;
+      color: var(--accent-strong);
+      margin-top: 0.06rem;
+    }
+
+    .feature-tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-muted);
+      display: inline-flex;
+      gap: 0.3rem;
+      align-items: center;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+    [data-theme="light"] .feature-tag {
+      background: rgba(255,255,255,0.95);
+    }
+
+    .feature-tag span.icon {
+      font-size: 0.8rem;
+    }
+
+    /* Community */
+    .comment-list {
+      margin-top: 0.5rem;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .comment {
+      border-radius: var(--radius-sm);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 0.55rem 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      display: grid;
+      gap: 0.25rem;
+    }
+    [data-theme="light"] .comment {
+      background: rgba(255,255,255,0.95);
+    }
+    .comment-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .comment-body {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .comment-username {
+      font-weight: 600;
+    }
+    .comment-warning {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .input-row {
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+    }
+    .input-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.1rem;
+    }
+    .input, textarea {
+      width: 100%;
+      border-radius: 10px;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+    }
+    [data-theme="light"] .input,
+    [data-theme="light"] textarea {
+      background: rgba(255,255,255,0.98);
+      color: #020617;
+    }
+    .input:focus,
+    textarea:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.65);
+    }
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .form-row-inline {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+    @media (max-width: 600px) {
+      .form-row-inline {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+    .helper {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .error-text {
+      font-size: 0.75rem;
+      color: var(--danger);
+      margin-top: 0.1rem;
+    }
+    .success-text {
+      font-size: 0.75rem;
+      color: var(--success);
+      margin-top: 0.1rem;
+    }
+
+    .badge-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at 0 0, rgba(34, 211, 238, 0.12), transparent 55%);
+      color: var(--text-muted);
+    }
+
+    /* Contact */
+    .contact-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* README / Deployment */
+    .readme-section {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: grid;
+      gap: 0.5rem;
+    }
+    .readme-section code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.78rem;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 0.15rem 0.3rem;
+      border-radius: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+    [data-theme="light"] .readme-section code {
+      background: rgba(255,255,255,0.98);
+    }
+    .readme-section ol {
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.25rem;
+    }
+    .readme-section li {
+      margin-left: 0.2rem;
+    }
+
+    /* Auth modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 18px;
+      background: var(--glass);
+      border: 1px solid var(--border-glass);
+      box-shadow: var(--shadow-soft);
+      padding: 1rem 1.1rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        radial-gradient(circle at 0 0, rgba(34,211,238,0.16), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.18), transparent 55%);
+      opacity: 0.9;
+    }
+    .modal-inner {
+      position: relative;
+      z-index: 1;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .modal-close {
+      border-radius: 999px;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    [data-theme="light"] .modal-close {
+      background: rgba(255,255,255,0.96);
+    }
+    .tab-row {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 0.12rem;
+      margin-bottom: 0.5rem;
+      background: rgba(15, 23, 42, 0.9);
+    }
+    [data-theme="light"] .tab-row {
+      background: rgba(255,255,255,0.96);
+    }
+    .tab {
+      border: none;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.7rem;
+      color: var(--text-muted);
+      background: transparent;
+      min-width: 70px;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #22d3ee, #6366f1);
+      color: #020617;
+      font-weight: 600;
+    }
+    .modal-body {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+    .auth-status {
+      font-size: 0.78rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 0.7rem 1rem 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    footer .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    footer a {
+      color: var(--accent-strong);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+<div class="noise-overlay"></div>
+
+<header>
+  <nav class="nav">
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="brand-inner">CG</div>
+      </div>
+      <div class="brand-text">
+        <span>CyberGate</span>
+        <span>Cybersecurity hub</span>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <button class="nav-link active" data-section="home">Home</button>
+      <button class="nav-link" data-section="features">Features</button>
+      <button class="nav-link" data-section="community">Community</button>
+      <button class="nav-link" data-section="contact">Contact</button>
+      <button class="nav-link" data-section="readme">README</button>
+    </div>
+
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle">
+        <span id="themeIcon">🌙</span>
+        <span>Theme</span>
+      </button>
+      <button class="nav-btn" id="authOpenBtn">
+        <span class="icon">🔐</span>
+        <span id="authBtnLabel">Login</span>
+      </button>
+    </div>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-links">
+      <button class="active" data-section="home">Home</button>
+      <button data-section="features">Features</button>
+      <button data-section="community">Community</button>
+      <button data-section="contact">Contact</button>
+      <button data-section="readme">README</button>
+    </div>
+    <div class="mobile-menu-footer">
+      <button class="theme-toggle" id="themeToggleMobile">
+        <span id="themeIconMobile">🌙</span>
+        <span>Theme</span>
+      </button>
+      <button class="nav-btn" id="authOpenBtnMobile">
+        <span class="icon">🔐</span>
+        <span id="authBtnLabelMobile">Login</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrapper">
+    <!-- Home -->
+    <section id="home" class="section active">
+      <div class="cards-grid">
+        <article class="card">
+          <div class="card-inner">
+            <div class="card-header">
+              <h1 class="card-title hero-heading">
+                Welcome to <span class="gradient-text">CyberGate</span>
+              </h1>
+              <span class="card-pill">Mini project · Cybersecurity</span>
+            </div>
+            <p class="card-subtitle">
+              A responsive, SPA‑style demo that showcases modern UI, client‑side security basics, and a small cyber community area.
+            </p>
+            <div class="card-body">
+              <p>
+                CyberGate is a **single‑page** static website that simulates a secure portal with sections for features, community discussion, and secure contact.  
+              </p>
+              <div class="hero-meta">
+                <span>🛡️ Client‑side validation</span>
+                <span>🔏 XSS‑safe comments</span>
+                <span>🌗 Dark / light theme</span>
+                <span>⚡ LocalStorage demo auth</span>
+              </div>
+              <div class="hero-cta">
+                <button class="nav-btn" data-section="community">
+                  <span class="icon">💬</span>
+                  <span>Open Community</span>
+                </button>
+                <button class="btn-secondary" data-section="features">
+                  <span>Explore features</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-inner hero-visual">
+            <div class="orb-grid"></div>
+            <div class="orb"></div>
+            <div class="orb-outline"></div>
+            <div class="hero-badge">
+              <span>🛰️</span>
+              <span>Simulated secure gateway</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h2 class="card-title">
+              Project overview
+            </h2>
+          </div>
+          <p class="card-subtitle">
+            Use this page in your portfolio to demonstrate fundamentals of SPA‑style navigation, security‑aware UI, and deployment to Cloudflare Pages.
+          </p>
+          <div class="split-2">
+            <div class="card-body">
+              <p>
+                The layout follows a responsive grid with a focus on **glassmorphism**, gradients, and subtle neon cyber accents.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>All sections (Home, Features, Community, Contact, README) are rendered on one HTML page and switched with JavaScript.</span></li>
+                <li><span class="bullet">•</span><span>Forms are validated on the client side, and comments are sanitized and rate‑limited.</span></li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p>
+                This project uses only HTML, CSS, and JavaScript with localStorage to simulate authentication and comment storage.  
+              </p>
+              <div class="pill-row">
+                <span class="pill">HTML5 SPA‑style shell</span>
+                <span class="pill">CSS glassmorphism</span>
+                <span class="pill">JS validation & rate limit</span>
+                <span class="pill">localStorage demo data</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section">
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h2 class="section-heading">UI, layout, and UX</h2>
+            <span class="card-pill">Design layer</span>
+          </div>
+          <p class="section-intro">
+            CyberGate uses a modern cyber‑themed design with gradients, glow effects, and glass panels that scale from mobile to desktop.
+          </p>
+          <div class="split-2">
+            <div class="card-body">
+              <p>
+                Design highlights focus on **clarity** and strong contrast so content is readable even in dark mode.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>Full‑width gradient background with subtle noise overlay for depth.</span></li>
+                <li><span class="bullet">•</span><span>Glassmorphism cards with soft shadows and blur, ideal for dashboards.</span></li>
+                <li><span class="bullet">•</span><span>Sticky navigation bar with smooth highlighting of active section.</span></li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p>
+                Responsiveness is handled via CSS grid and media queries, adapting the layout gracefully.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>Two‑column cards on desktop collapse into one column on smaller screens.</span></li>
+                <li><span class="bullet">•</span><span>Mobile menu with hamburger toggle for easy thumb navigation.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h2 class="section-heading">Interactivity and theme</h2>
+            <span class="card-pill">Experience layer</span>
+          </div>
+          <p class="section-intro">
+            Navigation, theme, and feedback are all handled on the client to create a smooth, app‑like feel.
+          </p>
+          <div class="split-2">
+            <div class="card-body">
+              <p>
+                Interactive elements keep the experience **dynamic** without page reloads.  
+              </p>
+              <span class="feature-tag"><span class="icon">🧭</span>SPA‑style section switching</span>
+              <span class="feature-tag"><span class="icon">🔒</span>Login / Signup modal</span>
+              <span class="feature-tag"><span class="icon">💬</span>Comment posting</span>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>JS switches visible section using CSS classes, giving an SPA feeling.</span></li>
+                <li><span class="bullet">•</span><span>Auth dialog uses tabs for switching between login and signup.</span></li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p>
+                Theme toggling enhances usability in different lighting conditions.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>Dark/light theme toggles update CSS variables at the root.</span></li>
+                <li><span class="bullet">•</span><span>Selected theme is stored in localStorage so user preference persists.</span></li>
+              </ul>
+              <span class="badge-soft">🌗 Theme-aware glassmorphism</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h2 class="section-heading">Security basics demonstrated</h2>
+            <span class="card-pill">Client‑side security</span>
+          </div>
+          <p class="section-intro">
+            Even though this is a static demo, it still demonstrates how to respect common security principles at the UI level.
+          </p>
+          <div class="split-2">
+            <div class="card-body">
+              <p>
+                Forms for login, signup, comments, and contact include **input validation** on the client.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>Basic checks for required fields and minimum password length.</span></li>
+                <li><span class="bullet">•</span><span>Contact form validates email format and message length.</span></li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <p>
+                The comment system emphasizes safe rendering in the browser.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>Simple XSS protection by stripping HTML tags before storing and rendering.</span></li>
+                <li><span class="bullet">•</span><span>Rate limiting: one comment allowed per 10 seconds per browser to reduce spam.</span></li>
+              </ul>
+              <span class="badge-soft">⚠️ Demo only – real apps need server‑side security</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Community -->
+    <section id="community" class="section">
+      <div class="cards-grid">
+        <article class="card">
+          <div class="card-inner">
+            <div class="card-header">
+              <h2 class="section-heading">CyberGate Community</h2>
+              <span class="card-pill">localStorage demo</span>
+            </div>
+            <p class="section-intro">
+              Sign up, log in, and share short messages with other visitors of this browser instance. All data is stored locally only.
+            </p>
+            <div class="card-body">
+              <p>
+                This community area simulates a **micro‑forum** where the logged‑in user can post comments that are persisted in localStorage.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>No backend is involved; everything runs in your browser only.</span></li>
+                <li><span class="bullet">•</span><span>Use the “Login” button in the header to authenticate before posting.</span></li>
+              </ul>
+              <p class="comment-warning">
+                Note: Never store real passwords or secrets here. This is purely for educational demonstration.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-inner">
+            <div class="card-header">
+              <h3 class="card-title">Post a comment</h3>
+              <span class="card-pill" id="communityUserStatus">Status: Guest</span>
+            </div>
+            <p class="card-subtitle">
+              Comments are sanitized to remove any HTML tags and rate limited to prevent spam.
+            </p>
+            <div class="card-body">
+              <label class="input-row">
+                <span class="input-label">Message</span>
+                <textarea id="commentInput" placeholder="Share a quick thought about cybersecurity, tools, or best practices..."></textarea>
+              </label>
+              <div id="commentError" class="error-text" style="display:none;"></div>
+              <div id="commentSuccess" class="success-text" style="display:none;"></div>
+              <div class="form-footer">
+                <span class="helper">
+                  Tip: HTML tags will be stripped to avoid XSS in this demo.
+                </span>
+                <button class="nav-btn" id="commentSubmitBtn">
+                  <span class="icon">📤</span>
+                  <span>Post</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h3 class="card-title">Recent messages</h3>
+            <span class="card-pill" id="commentCountBadge">0 comments</span>
+          </div>
+          <div class="card-body">
+            <div class="comment-list" id="commentList"></div>
+            <p class="helper">
+              Comments are stored in your browser’s localStorage so you can refresh and keep them, but other devices will not see them.
+            </p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h2 class="section-heading">Contact CyberGate</h2>
+            <span class="card-pill">Contact form</span>
+          </div>
+          <p class="section-intro">
+            This form shows how to build basic validated inputs before you would send data to a backend or API in a real project.
+          </p>
+          <div class="split-2">
+            <div class="card-body">
+              <form id="contactForm" novalidate>
+                <div class="form-row-inline">
+                  <div>
+                    <label class="input-row">
+                      <span class="input-label">Name</span>
+                      <input type="text" id="contactName" class="input" placeholder="Your name" />
+                    </label>
+                  </div>
+                  <div>
+                    <label class="input-row">
+                      <span class="input-label">Email</span>
+                      <input type="email" id="contactEmail" class="input" placeholder="you@example.com" />
+                    </label>
+                  </div>
+                </div>
+                <label class="input-row">
+                  <span class="input-label">Subject</span>
+                  <input type="text" id="contactSubject" class="input" placeholder="What is this about?" />
+                </label>
+                <label class="input-row">
+                  <span class="input-label">Message</span>
+                  <textarea id="contactMessage" placeholder="Describe your question, feedback, or idea..."></textarea>
+                </label>
+                <div id="contactError" class="error-text" style="display:none;"></div>
+                <div id="contactSuccess" class="success-text" style="display:none;"></div>
+                <div class="form-footer">
+                  <span class="helper">
+                    Validation checks required fields and email format before submitting.
+                  </span>
+                  <button type="submit" class="nav-btn">
+                    <span class="icon">📨</span>
+                    <span>Send (demo)</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="card-body">
+              <p>
+                In production, this form would submit to a secure backend or serverless function with rate limiting and spam filtering.  
+              </p>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>Never trust client‑side validation alone; always re‑validate on the server.</span></li>
+                <li><span class="bullet">•</span><span>Use HTTPS and a WAF such as Cloudflare’s to protect the real endpoint.</span></li>
+              </ul>
+              <p class="contact-note">
+                For this mini project, no data leaves your browser. Use it as a template when connecting to APIs later.
+              </p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- README / Deployment instructions -->
+    <section id="readme" class="section">
+      <article class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <h2 class="section-heading">README – Deploy CyberGate</h2>
+            <span class="card-pill">Cloudflare Pages + WAF</span>
+          </div>
+          <p class="section-intro">
+            These steps explain how to put this single HTML file online using GitHub and Cloudflare Pages, then protect it using Cloudflare’s free WAF.
+          </p>
+          <div class="readme-section">
+            <div>
+              <h3>1. Prepare the repository</h3>
+              <ol>
+                <li>Create a new folder on your machine, place this file as <code>index.html</code> inside it.</li>
+                <li>Initialize git: <code>git init</code>, then <code>git add index.html</code> and <code>git commit -m "Initial CyberGate"</code>.</li>
+                <li>Create a new GitHub repository and push the code: <code>git remote add origin &lt;your‑repo‑url&gt;</code> then <code>git push -u origin main</code>.</li>
+              </ol>
+            </div>
+            <div>
+              <h3>2. Deploy to Cloudflare Pages</h3>
+              <ol>
+                <li>Login to Cloudflare and go to <strong>Workers &amp; Pages</strong> → <strong>Create application</strong> → <strong>Pages</strong>. [web:8]</li>
+                <li>Select <strong>Connect to Git</strong> and choose the GitHub repo you just created. [web:11]</li>
+                <li>For framework preset choose <strong>None (static HTML)</strong>. Leave build command empty and build output directory empty (Cloudflare will serve the root containing <code>index.html</code>). [web:8][web:11]</li>
+                <li>Click <strong>Save and deploy</strong>. Cloudflare will build and give you a <code>*.pages.dev</code> URL for CyberGate. [web:8]</li>
+              </ol>
+            </div>
+            <div>
+              <h3>3. Add a custom domain (optional)</h3>
+              <ol>
+                <li>In your Pages project settings, map a custom domain (for example, <code>cybergate.yourdomain.com</code>).</li>
+                <li>Cloudflare will guide you to configure DNS so traffic goes through its edge network. [web:11]</li>
+              </ol>
+            </div>
+            <div>
+              <h3>4. Enable Cloudflare WAF</h3>
+              <ol>
+                <li>In Cloudflare dashboard select your domain, then go to <strong>Security &gt; WAF</strong>. [web:24][web:13]</li>
+                <li>Ensure the free managed ruleset (for common CVEs and OWASP vulnerabilities) is enabled. [web:24][web:13]</li>
+                <li>Optionally create extra rules, such as blocking suspicious countries or adding simple rate‑limit rules for paths that would host APIs in a real app. [web:21][web:25]</li>
+                <li>Confirm DNS is proxied (orange cloud) so traffic actually passes through the WAF. [web:23][web:25]</li>
+              </ol>
+            </div>
+            <div>
+              <h3>5. Security notes</h3>
+              <ul class="list">
+                <li><span class="bullet">•</span><span>This project uses localStorage and client‑side checks only, which is fine for a demo but not for real authentication.</span></li>
+                <li><span class="bullet">•</span><span>In production you must handle auth, XSS, CSRF, and rate limiting on the server as well, and log activity behind your WAF. [web:24][web:25]</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>© <span id="year"></span> CyberGate · Cybersecurity mini project.</span>
+    <span>Deployed on Cloudflare Pages with WAF protection recommended. [web:8][web:24]</span>
+  </div>
+</footer>
+
+<!-- Auth Modal -->
+<div class="modal-backdrop" id="authModal">
+  <div class="modal">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Account access</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">
+            Demo‑only auth using localStorage (no real passwords, no backend).
+          </div>
+        </div>
+        <button class="modal-close" id="authCloseBtn">✕</button>
+      </div>
+      <div>
+        <div class="tab-row">
+          <button class="tab active" data-auth-tab="login">Login</button>
+          <button class="tab" data-auth-tab="signup">Sign up</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm">
+          <label class="input-row">
+            <span class="input-label">Username</span>
+            <input type="text" id="loginUsername" class="input" placeholder="Choose a demo username" />
+          </label>
+          <label class="input-row">
+            <span class="input-label">Password</span>
+            <input type="password" id="loginPassword" class="input" placeholder="Demo password (min 6 chars)" />
+          </label>
+          <div id="loginError" class="error-text" style="display:none;"></div>
+          <div id="loginSuccess" class="success-text" style="display:none;"></div>
+          <div class="form-footer">
+            <span class="helper">Existing demo users only. Use “Sign up” tab to create one.</span>
+            <button type="submit" class="nav-btn">
+              <span class="icon">➡️</span><span>Login</span>
+            </button>
+          </div>
+        </form>
+
+        <form id="signupForm" style="display:none;">
+          <label class="input-row">
+            <span class="input-label">Username</span>
+            <input type="text" id="signupUsername" class="input" placeholder="Pick a username" />
+          </label>
+          <label class="input-row">
+            <span class="input-label">Password</span>
+            <input type="password" id="signupPassword" class="input" placeholder="At least 6 characters" />
+          </label>
+          <label class="input-row">
+            <span class="input-label">Confirm password</span>
+            <input type="password" id="signupPassword2" class="input" placeholder="Repeat password" />
+          </label>
+          <div id="signupError" class="error-text" style="display:none;"></div>
+          <div id="signupSuccess" class="success-text" style="display:none;"></div>
+          <div class="form-footer">
+            <span class="helper">Passwords are stored in localStorage for demo only. Use fake credentials.</span>
+            <button type="submit" class="nav-btn">
+              <span class="icon">✅</span><span>Sign up</span>
+            </button>
+          </div>
+        </form>
+        <div class="auth-status" id="authStatusText"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Utility: localStorage keys
+  const LS_THEME = "cybergate_theme";
+  const LS_USERS = "cybergate_users";
+  const LS_CURRENT_USER = "cybergate_current_user";
+  const LS_COMMENTS = "cybergate_comments";
+  const LS_LAST_COMMENT_AT = "cybergate_last_comment";
+
+  // SECTION NAVIGATION (SPA-like)
+  function showSection(id) {
+    document.querySelectorAll(".section").forEach(sec => {
+      sec.classList.toggle("active", sec.id === id);
+    });
+    document.querySelectorAll(".nav-link").forEach(btn => {
+      const target = btn.getAttribute("data-section");
+      if (target) btn.classList.toggle("active", target === id);
+    });
+    document.querySelectorAll("#mobileMenu .mobile-menu-links button").forEach(btn => {
+      const target = btn.getAttribute("data-section");
+      if (target) btn.classList.toggle("active", target === id);
+    });
+  }
+
+  document.querySelectorAll("[data-section]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      // Only treat as navigation if it is a nav button, not a theme toggle
+      if (btn.classList.contains("nav-link") || btn.closest(".mobile-menu-links") || btn.closest(".hero-cta")) {
+        const section = btn.getAttribute("data-section");
+        if (section) {
+          showSection(section);
+          const mobileMenu = document.getElementById("mobileMenu");
+          if (mobileMenu && mobileMenu.classList.contains("open")) {
+            mobileMenu.classList.remove("open");
+          }
+        }
+      }
+    });
+  });
+
+  // MOBILE MENU TOGGLE
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  if (hamburgerBtn && mobileMenu) {
+    hamburgerBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("open");
+    });
+  }
+
+  // THEME TOGGLE
+  function applyTheme(theme) {
+    document.body.setAttribute("data-theme", theme);
+    const dark = theme === "dark";
+    const icon = document.getElementById("themeIcon");
+    const iconMobile = document.getElementById("themeIconMobile");
+    if (icon) icon.textContent = dark ? "🌙" : "☀️";
+    if (iconMobile) iconMobile.textContent = dark ? "🌙" : "☀️";
+  }
+  function loadTheme() {
+    const stored = localStorage.getItem(LS_THEME);
+    if (stored === "light" || stored === "dark") {
+      applyTheme(stored);
+    } else {
+      applyTheme("dark");
+    }
+  }
+  function toggleTheme() {
+    const current = document.body.getAttribute("data-theme") || "dark";
+    const next = current === "dark" ? "light" : "dark";
+    localStorage.setItem(LS_THEME, next);
+    applyTheme(next);
+  }
+  document.getElementById("themeToggle")?.addEventListener("click", toggleTheme);
+  document.getElementById("themeToggleMobile")?.addEventListener("click", toggleTheme);
+
+  // AUTH / USERS
+  function getUsers() {
+    const raw = localStorage.getItem(LS_USERS);
+    if (!raw) return {};
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  function saveUsers(users) {
+    localStorage.setItem(LS_USERS, JSON.stringify(users || {}));
+  }
+  function getCurrentUser() {
+    return localStorage.getItem(LS_CURRENT_USER) || null;
+  }
+  function setCurrentUser(username) {
+    if (username) localStorage.setItem(LS_CURRENT_USER, username);
+    else localStorage.removeItem(LS_CURRENT_USER);
+    updateAuthUI();
+  }
+
+  function updateAuthUI() {
+    const user = getCurrentUser();
+    const label = document.getElementById("authBtnLabel");
+    const labelMobile = document.getElementById("authBtnLabelMobile");
+    const status = document.getElementById("communityUserStatus");
+    const authStatusText = document.getElementById("authStatusText");
+    if (user) {
+      if (label) label.textContent = "Logout";
+      if (labelMobile) labelMobile.textContent = "Logout";
+      if (status) status.textContent = "Logged in as " + user;
+      if (authStatusText) authStatusText.textContent = "You are logged in as " + user + " (demo only, local to this browser).";
+    } else {
+      if (label) label.textContent = "Login";
+      if (labelMobile) labelMobile.textContent = "Login";
+      if (status) status.textContent = "Status: Guest";
+      if (authStatusText) authStatusText.textContent = "You are currently browsing as a guest.";
+    }
+  }
+
+  // AUTH MODAL
+  const authModal = document.getElementById("authModal");
+  const authOpenBtn = document.getElementById("authOpenBtn");
+  const authOpenBtnMobile = document.getElementById("authOpenBtnMobile");
+  const authCloseBtn = document.getElementById("authCloseBtn");
+
+  function openAuthModal() {
+    const user = getCurrentUser();
+    if (user) {
+      // clicking when logged in logs out directly
+      setCurrentUser(null);
+      alert("Logged out from demo account.");
+      return;
+    }
+    authModal?.classList.add("open");
+  }
+  function closeAuthModal() {
+    authModal?.classList.remove("open");
+  }
+  authOpenBtn?.addEventListener("click", openAuthModal);
+  authOpenBtnMobile?.addEventListener("click", openAuthModal);
+  authCloseBtn?.addEventListener("click", closeAuthModal);
+  authModal?.addEventListener("click", (e) => {
+    if (e.target === authModal) closeAuthModal();
+  });
+
+  // AUTH TABS
+  const tabs = document.querySelectorAll(".tab-row .tab");
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const target = tab.getAttribute("data-auth-tab");
+      tabs.forEach(t => t.classList.toggle("active", t === tab));
+      if (target === "login") {
+        loginForm.style.display = "block";
+        signupForm.style.display = "none";
+      } else {
+        loginForm.style.display = "none";
+        signupForm.style.display = "block";
+      }
+    });
+  });
+
+  // SIGNUP HANDLER
+  signupForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const username = document.getElementById("signupUsername").value.trim();
+    const pw1 = document.getElementById("signupPassword").value;
+    const pw2 = document.getElementById("signupPassword2").value;
+    const err = document.getElementById("signupError");
+    const ok = document.getElementById("signupSuccess");
+    if (err) err.style.display = "none";
+    if (ok) ok.style.display = "none";
+
+    if (!username || !pw1 || !pw2) {
+      if (err) {
+        err.textContent = "All fields are required for signup.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    if (pw1.length < 6) {
+      if (err) {
+        err.textContent = "Password must be at least 6 characters long.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    if (pw1 !== pw2) {
+      if (err) {
+        err.textContent = "Passwords do not match.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    const users = getUsers();
+    if (users[username]) {
+      if (err) {
+        err.textContent = "This username already exists. Choose another.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    users[username] = { password: pw1 };
+    saveUsers(users);
+    if (ok) {
+      ok.textContent = "Signup successful! You can now login.";
+      ok.style.display = "block";
+    }
+  });
+
+  // LOGIN HANDLER
+  loginForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const err = document.getElementById("loginError");
+    const ok = document.getElementById("loginSuccess");
+    if (err) err.style.display = "none";
+    if (ok) ok.style.display = "none";
+
+    if (!username || !password) {
+      if (err) {
+        err.textContent = "Both username and password are required.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    const users = getUsers();
+    const user = users[username];
+    if (!user || user.password !== password) {
+      if (err) {
+        err.textContent = "Invalid username or password.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    setCurrentUser(username);
+    if (ok) {
+      ok.textContent = "Login successful.";
+      ok.style.display = "block";
+    }
+    setTimeout(() => {
+      closeAuthModal();
+    }, 600);
+  });
+
+  // COMMENTS
+  function sanitizeComment(text) {
+    // Remove all HTML tags to avoid XSS: simple regex for demo
+    return text.replace(/<[^>]*>?/g, "");
+  }
+  function getComments() {
+    const raw = localStorage.getItem(LS_COMMENTS);
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  function saveComments(comments) {
+    localStorage.setItem(LS_COMMENTS, JSON.stringify(comments || []));
+  }
+  function renderComments() {
+    const list = document.getElementById("commentList");
+    const badge = document.getElementById("commentCountBadge");
+    const comments = getComments().slice().reverse(); // newest first
+    if (!list) return;
+    list.innerHTML = "";
+    comments.forEach(c => {
+      const div = document.createElement("div");
+      div.className = "comment";
+      const meta = document.createElement("div");
+      meta.className = "comment-meta";
+      const left = document.createElement("span");
+      left.innerHTML = `<span class="comment-username">${c.user}</span> · ${new Date(c.timestamp).toLocaleString()}`;
+      const right = document.createElement("span");
+      right.textContent = "# " + c.id;
+      meta.appendChild(left);
+      meta.appendChild(right);
+
+      const body = document.createElement("div");
+      body.className = "comment-body";
+      body.textContent = c.text;
+      div.appendChild(meta);
+      div.appendChild(body);
+      list.appendChild(div);
+    });
+    if (badge) {
+      const count = comments.length;
+      badge.textContent = count + (count === 1 ? " comment" : " comments");
+    }
+  }
+
+  const commentSubmitBtn = document.getElementById("commentSubmitBtn");
+  commentSubmitBtn?.addEventListener("click", () => {
+    const textarea = document.getElementById("commentInput");
+    const err = document.getElementById("commentError");
+    const ok = document.getElementById("commentSuccess");
+    if (err) err.style.display = "none";
+    if (ok) ok.style.display = "none";
+
+    const user = getCurrentUser();
+    if (!user) {
+      if (err) {
+        err.textContent = "You must be logged in to post a comment. Use the Login button above.";
+        err.style.display = "block";
+      }
+      return;
+    }
+
+    const rawText = (textarea?.value || "").trim();
+    if (!rawText) {
+      if (err) {
+        err.textContent = "Comment cannot be empty.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    if (rawText.length > 500) {
+      if (err) {
+        err.textContent = "Comment is too long. Please keep it under 500 characters.";
+        err.style.display = "block";
+      }
+      return;
+    }
+
+    // Rate limiting: one comment per 10 seconds per browser
+    const now = Date.now();
+    const lastRaw = localStorage.getItem(LS_LAST_COMMENT_AT);
+    if (lastRaw) {
+      const last = parseInt(lastRaw, 10);
+      if (Number.isFinite(last)) {
+        const diffSec = (now - last) / 1000;
+        const wait = 10 - diffSec;
+        if (wait > 0) {
+          if (err) {
+            err.textContent = "Rate limit active. Please wait " + Math.ceil(wait) + " seconds before commenting again.";
+            err.style.display = "block";
+          }
+          return;
+        }
+      }
+    }
+
+    const text = sanitizeComment(rawText);
+    const comments = getComments();
+    const id = comments.length ? comments[comments.length - 1].id + 1 : 1;
+    comments.push({
+      id,
+      user,
+      text,
+      timestamp: now
+    });
+    saveComments(comments);
+    localStorage.setItem(LS_LAST_COMMENT_AT, String(now));
+    if (textarea) textarea.value = "";
+    if (ok) {
+      ok.textContent = "Comment posted successfully (HTML tags stripped).";
+      ok.style.display = "block";
+    }
+    renderComments();
+  });
+
+  // CONTACT FORM VALIDATION
+  const contactForm = document.getElementById("contactForm");
+  contactForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("contactName").value.trim();
+    const email = document.getElementById("contactEmail").value.trim();
+    const subject = document.getElementById("contactSubject").value.trim();
+    const message = document.getElementById("contactMessage").value.trim();
+    const err = document.getElementById("contactError");
+    const ok = document.getElementById("contactSuccess");
+    if (err) err.style.display = "none";
+    if (ok) ok.style.display = "none";
+
+    if (!name || !email || !subject || !message) {
+      if (err) {
+        err.textContent = "All fields are required. Please complete the form.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      if (err) {
+        err.textContent = "Please enter a valid email address.";
+        err.style.display = "block";
+      }
+      return;
+    }
+    if (message.length < 10) {
+      if (err) {
+        err.textContent = "Message should be at least 10 characters long.";
+        err.style.display = "block";
+      }
+      return;
+    }
+
+    // Demo: just display success
+    if (ok) {
+      ok.textContent = "Form validated successfully. In a real app, this would be sent to a secure backend.";
+      ok.style.display = "block";
+    }
+  });
+
+  // FOOTER YEAR
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // INITIALIZE
+  loadTheme();
+  updateAuthUI();
+  renderComments();
+</script>
+</body>
+</html>
+```lass="card-inner">
+          <div class="card-head
